@@ -1,0 +1,21 @@
+name: Java & Gradle CI
+
+on: [ push ]
+
+jobs:
+  test:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Java JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+      - name: Validate the project
+        run: mvn validate
+      - name: Compile the project
+        run: mvn compile
+      - name: Test the project (unit test and functional tests with test-containers)
+        run: mvn test
