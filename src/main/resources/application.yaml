@@ -1,0 +1,14 @@
+management:
+  endpoints:
+    enabled-by-default: false
+  endpoint:
+    health:
+      enabled: true
+      show-details: never # change to when_authorized once authentication is implemented
+
+r2dbc:
+  migrate:
+    resources-paths: classpath:/db/migration/*.sql
+
+server:
+  port: 8080
