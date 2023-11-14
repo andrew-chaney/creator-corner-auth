@@ -60,4 +60,20 @@ public class UserDto {
 
     @JsonProperty("updatedTsEpoch")
     LocalDateTime updatedTsEpoch;
+
+    public String creationLogString() {
+        return String.format("[firstName: %s, lastName: %s, email: %s]", firstName, lastName, email);
+    }
+
+    public String persistedLogString() {
+        return String.format(
+                "[userId: %s, firstName: %s, lastName: %s, email: %s, createdTsEpoch: %s, updatedTsEpoch: %s]",
+                userId,
+                firstName,
+                lastName,
+                email,
+                createdTsEpoch,
+                updatedTsEpoch
+        );
+    }
 }
