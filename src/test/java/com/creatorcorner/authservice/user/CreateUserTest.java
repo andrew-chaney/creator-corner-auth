@@ -1,6 +1,6 @@
 package com.creatorcorner.authservice.user;
 
-import com.creatorcorner.authservice.AbstractBaseFT;
+import com.creatorcorner.authservice.AbstractBaseTest;
 import com.creatorcorner.authservice.dto.UserDto;
 import com.creatorcorner.authservice.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +14,7 @@ import org.springframework.http.MediaType;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class CreateUserFT extends AbstractBaseFT {
+class CreateUserTest extends AbstractBaseTest {
 
     @Autowired
     private UserRepository userRepository;

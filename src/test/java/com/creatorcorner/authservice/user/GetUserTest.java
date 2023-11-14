@@ -1,6 +1,6 @@
 package com.creatorcorner.authservice.user;
 
-import com.creatorcorner.authservice.AbstractBaseFT;
+import com.creatorcorner.authservice.AbstractBaseTest;
 import com.creatorcorner.authservice.dto.UserDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,7 +12,7 @@ import java.util.UUID;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class GetUserFT extends AbstractBaseFT {
+class GetUserTest extends AbstractBaseTest {
 
     @Test
     @DisplayName("Can get an existing user")

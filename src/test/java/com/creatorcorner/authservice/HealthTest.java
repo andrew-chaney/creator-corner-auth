@@ -2,7 +2,7 @@ package com.creatorcorner.authservice;
 
 import org.junit.jupiter.api.Test;
 
-class HealthFT extends AbstractBaseFT {
+class HealthTest extends AbstractBaseTest {
 
     @Test
     void healthCheckReturns200() {

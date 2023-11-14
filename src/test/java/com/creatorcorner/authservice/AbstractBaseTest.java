@@ -10,7 +10,7 @@ import java.time.Duration;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public abstract class AbstractBaseFT {
+public abstract class AbstractBaseTest {
 
     protected WebTestClient client;
 
