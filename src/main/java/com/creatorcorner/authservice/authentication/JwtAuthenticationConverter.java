@@ -1,6 +1,6 @@
 package com.creatorcorner.authservice.authentication;
 
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.server.authentication.ServerAuthenticationConverter;
 import org.springframework.stereotype.Component;
@@ -12,9 +12,8 @@ public class JwtAuthenticationConverter implements ServerAuthenticationConverter
 
     @Override
     public Mono<Authentication> convert(ServerWebExchange exchange) {
-        return Mono.justOrEmpty(exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION))
-                .filter(token -> token.startsWith("Bearer "))
-                .map(token -> token.substring(7))
+        return Mono.justOrEmpty(exchange.getRequest().getCookies().getFirst("creator_corner"))
+                .map(HttpCookie::getValue)
                 .map(BearerToken::new);
     }
 }

@@ -1,10 +1,11 @@
 package com.creatorcorner.authservice.handler;
 
+import com.creatorcorner.authservice.authentication.BearerToken;
 import com.creatorcorner.authservice.dto.LoginDto;
 import com.creatorcorner.authservice.service.AuthService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -27,12 +28,19 @@ public class AuthHandler {
                 .doOnNext(this::validate)
                 .doOnNext(login -> log.info("Processing login attempt for user: {}", login.getEmail()))
                 .flatMap(authService::login)
-                .doOnNext(token -> log.info("Token: {}", token.getValue()))
                 .flatMap(token -> ServerResponse.ok()
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token.getValue())
+                        .cookie(buildCookieFromToken(token))
                         .build()
                 )
                 .switchIfEmpty(ServerResponse.badRequest().bodyValue("Invalid credentials provided"));
+    }
+
+    private ResponseCookie buildCookieFromToken(BearerToken bearerToken) {
+        return ResponseCookie.from("creator_corner").build()
+                .mutate()
+                .value(bearerToken.getValue())
+                .httpOnly(true)
+                .build();
     }
 
     private void validate(LoginDto loginDto) {

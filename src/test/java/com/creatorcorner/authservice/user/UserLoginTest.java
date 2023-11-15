@@ -10,8 +10,9 @@ import com.creatorcorner.authservice.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseCookie;
+import org.springframework.util.MultiValueMap;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -48,17 +49,17 @@ class UserLoginTest extends AbstractBaseTest {
                 .expectStatus().isCreated();
 
         // Log the user in
-        HttpHeaders result = this.client.post().uri("/login")
+        MultiValueMap<String, ResponseCookie> result = this.client.post().uri("/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(loginRequest)
                 .exchange()
                 .expectStatus().isOk()
-                .expectHeader().exists(HttpHeaders.AUTHORIZATION)
+                .expectCookie().exists("creator_corner")
                 .returnResult(String.class)
-                .getResponseHeaders();
+                .getResponseCookies();
 
-        // Create the BearerToken from the authorization header
-        BearerToken resultingToken = new BearerToken(result.getFirst(HttpHeaders.AUTHORIZATION).substring(7));
+        // Create the BearerToken from the provided cookie
+        BearerToken resultingToken = new BearerToken(result.getFirst("creator_corner").getValue());
 
         // Get the entity for the test user
         User testUserEntity = userRepository.findByEmail(testUser.getEmail()).block();
