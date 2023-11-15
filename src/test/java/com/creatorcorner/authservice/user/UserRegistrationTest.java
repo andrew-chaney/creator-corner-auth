@@ -14,7 +14,7 @@ import org.springframework.http.MediaType;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class CreateUserTest extends AbstractBaseTest {
+class UserRegistrationTest extends AbstractBaseTest {
 
     @Autowired
     private UserRepository userRepository;
@@ -25,8 +25,8 @@ class CreateUserTest extends AbstractBaseTest {
     }
 
     @Test
-    @DisplayName("Can create a valid user, and get a valid response object.")
-    void canCreateValidUser() {
+    @DisplayName("Can register a valid user, and get a valid response object.")
+    void canRegisterValidUser() {
         UserDto request = UserDto.builder()
                 .firstName("John")
                 .lastName("Smith")
@@ -34,7 +34,7 @@ class CreateUserTest extends AbstractBaseTest {
                 .password("Super_Secure_Password123!")
                 .build();
 
-        this.client.post().uri("/user")
+        this.client.post().uri("/register")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
@@ -48,7 +48,7 @@ class CreateUserTest extends AbstractBaseTest {
     }
 
     @Test
-    @DisplayName("Cannot create two users with the same email")
+    @DisplayName("Cannot register two users with the same email")
     void cannotDuplicateEmails() {
         UserDto request = UserDto.builder()
                 .firstName("John")
@@ -57,8 +57,8 @@ class CreateUserTest extends AbstractBaseTest {
                 .password("Super_Secure_Password123!")
                 .build();
 
-        // Can create the first object.
-        this.client.post().uri("/user")
+        // Can register the first object.
+        this.client.post().uri("/register")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
@@ -70,8 +70,8 @@ class CreateUserTest extends AbstractBaseTest {
                     testSuccessfulUserResponse(response, request);
                 });
 
-        // Cannot create the second object
-        this.client.post().uri("/user")
+        // Cannot register the second object
+        this.client.post().uri("/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .exchange()
@@ -79,15 +79,15 @@ class CreateUserTest extends AbstractBaseTest {
     }
 
     @Test
-    @DisplayName("Cannot create a user without a first name")
-    void cannotCreateWithoutFirstName() {
+    @DisplayName("Cannot register a user without a first name")
+    void cannotRegisterWithoutFirstName() {
         UserDto request = UserDto.builder()
                 .lastName("Smith")
                 .email("john.smith@email.com")
                 .password("Super_Secure_Password123!")
                 .build();
 
-        this.client.post().uri("/user")
+        this.client.post().uri("/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .exchange()
@@ -95,15 +95,15 @@ class CreateUserTest extends AbstractBaseTest {
     }
 
     @Test
-    @DisplayName("Cannot create a user without a last name")
-    void cannotCreateWithoutLastName() {
+    @DisplayName("Cannot register a user without a last name")
+    void cannotRegisterWithoutLastName() {
         UserDto request = UserDto.builder()
                 .firstName("John")
                 .email("john.smith@email.com")
                 .password("Super_Secure_Password123!")
                 .build();
 
-        this.client.post().uri("/user")
+        this.client.post().uri("/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .exchange()
@@ -112,15 +112,15 @@ class CreateUserTest extends AbstractBaseTest {
 
 
     @Test
-    @DisplayName("Cannot create a user without an email")
-    void cannotCreateWithoutEmail() {
+    @DisplayName("Cannot register a user without an email")
+    void cannotRegisterWithoutEmail() {
         UserDto request = UserDto.builder()
                 .firstName("John")
                 .lastName("Smith")
                 .password("Super_Secure_Password123!")
                 .build();
 
-        this.client.post().uri("/user")
+        this.client.post().uri("/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .exchange()
@@ -128,15 +128,15 @@ class CreateUserTest extends AbstractBaseTest {
     }
 
     @Test
-    @DisplayName("Cannot create a user without an email")
-    void cannotCreateWithoutPassword() {
+    @DisplayName("Cannot register a user without a password")
+    void cannotRegisterWithoutPassword() {
         UserDto request = UserDto.builder()
                 .firstName("John")
                 .lastName("Smith")
                 .email("john.smith@email.com")
                 .build();
 
-        this.client.post().uri("/user")
+        this.client.post().uri("/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .exchange()
@@ -153,8 +153,8 @@ class CreateUserTest extends AbstractBaseTest {
             "no_Number_Here",   // No number
             "noSpecial1234",    // No special character
     })
-    @DisplayName("Cannot create a user with an invalid password")
-    void cannotCreateWithInvalidPassword(String testString) {
+    @DisplayName("Cannot register a user with an invalid password")
+    void cannotRegisterWithInvalidPassword(String testString) {
         UserDto request = UserDto.builder()
                 .firstName("John")
                 .lastName("Smith")
@@ -162,7 +162,7 @@ class CreateUserTest extends AbstractBaseTest {
                 .password(testString)
                 .build();
 
-        this.client.post().uri("/user")
+        this.client.post().uri("/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .exchange()

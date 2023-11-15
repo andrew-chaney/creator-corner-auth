@@ -24,23 +24,23 @@ import java.util.UUID;
 public class UserDto {
 
     @JsonProperty("userId")
-    UUID userId;
+    private UUID userId;
 
     @NotBlank
     @NotNull
     @JsonProperty("firstName")
-    String firstName;
+    private String firstName;
 
     @NotBlank
     @NotNull
     @JsonProperty("lastName")
-    String lastName;
+    private String lastName;
 
     @NotBlank
     @NotNull
     @Email
     @JsonProperty("email")
-    String email;
+    private String email;
 
     /*
         Password Requirements:
@@ -53,13 +53,13 @@ public class UserDto {
     @NotBlank
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?_\\-&])[A-Za-z\\d@$!%*_\\-?&]{8,}$")
     @JsonProperty("password")
-    String password;
+    private String password;
 
     @JsonProperty("createdTsEpoch")
-    LocalDateTime createdTsEpoch;
+    private LocalDateTime createdTsEpoch;
 
     @JsonProperty("updatedTsEpoch")
-    LocalDateTime updatedTsEpoch;
+    private LocalDateTime updatedTsEpoch;
 
     public String creationLogString() {
         return String.format("[firstName: %s, lastName: %s, email: %s]", firstName, lastName, email);

@@ -1,6 +1,6 @@
 package com.creatorcorner.authservice.router;
 
-import com.creatorcorner.authservice.handler.UserHandler;
+import com.creatorcorner.authservice.handler.AuthHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -11,12 +11,12 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
-public class UserRouter {
+public class AuthRouter {
 
     @Bean
-    public RouterFunction<ServerResponse> userRoutes(UserHandler userHandler) {
+    public RouterFunction<ServerResponse> authRoutes(AuthHandler authHandler) {
         return route()
-                .POST("/register", accept(MediaType.APPLICATION_JSON), userHandler::create)
+                .POST("/login", accept(MediaType.APPLICATION_JSON), authHandler::login)
                 .build();
     }
 }

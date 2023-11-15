@@ -9,3 +9,8 @@ spring:
     url: r2dbc:tc:postgresql:///creator_corner_auth?TC_IMAGE_TAG=15-alpine
     username: postgres
     password: postgres
+
+# Variables needed for application function
+jwt:
+  duration: 15
+  secret: SALkjfnalskupoi135-09kljalkn$-1234jkjlnlnaljs

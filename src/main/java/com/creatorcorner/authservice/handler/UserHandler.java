@@ -36,7 +36,7 @@ public class UserHandler {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .bodyValue(userDto)
                 )
-                .switchIfEmpty(ServerResponse.badRequest().build());
+                .switchIfEmpty(ServerResponse.badRequest().bodyValue("Account with provided email already exists"));
 
     }
 

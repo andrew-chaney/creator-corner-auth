@@ -2,11 +2,15 @@ package com.creatorcorner.authservice.mapper;
 
 import com.creatorcorner.authservice.dto.UserDto;
 import com.creatorcorner.authservice.entity.User;
-import org.springframework.security.crypto.bcrypt.BCrypt;
+import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+@AllArgsConstructor
 @Component
 public class UserMapper {
+
+    private PasswordEncoder passwordEncoder;
 
     public User userToMap(UserDto user) {
         return User.builder()
@@ -14,7 +18,7 @@ public class UserMapper {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
-                .hashedPassword(hashPassword(user.getPassword()))
+                .hashedPassword(passwordEncoder.encode(user.getPassword()))
                 .build();
     }
 
@@ -27,9 +31,5 @@ public class UserMapper {
                 .createdTsEpoch(user.getCreatedTsEpoch())
                 .updatedTsEpoch(user.getUpdatedTsEpoch())
                 .build();
-    }
-
-    private String hashPassword(String plainText) {
-        return BCrypt.hashpw(plainText, BCrypt.gensalt());
     }
 }
