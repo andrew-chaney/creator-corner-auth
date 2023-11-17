@@ -17,6 +17,7 @@ public class AuthRouter {
     public RouterFunction<ServerResponse> authRoutes(AuthHandler authHandler) {
         return route()
                 .POST("/login", accept(MediaType.APPLICATION_JSON), authHandler::login)
+                .GET("/validate", authHandler::validateCookie)
                 .build();
     }
 }

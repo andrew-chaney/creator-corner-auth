@@ -4,29 +4,56 @@ import com.creatorcorner.authservice.authentication.BearerToken;
 import com.creatorcorner.authservice.authentication.JwtSupport;
 import com.creatorcorner.authservice.dto.LoginDto;
 import com.creatorcorner.authservice.repository.UserRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpCookie;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-@AllArgsConstructor
+import java.time.Duration;
+
+@RequiredArgsConstructor
 @Slf4j
 @Service
 public class AuthService {
 
-    private JwtSupport jwtSupport;
-    private PasswordEncoder passwordEncoder;
-    private UserRepository userRepository;
+    private final JwtSupport jwtSupport;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    @Value("${jwt.duration-hours}")
+    private int durationHours;
+    @Value("${jwt.cookie-name}")
+    private String cookieName;
 
-    public Mono<BearerToken> login(LoginDto loginDto) {
+    public Mono<ResponseCookie> login(LoginDto loginDto) {
         return userRepository.findByEmail(loginDto.getEmail())
                 .flatMap(user -> {
                     if (passwordEncoder.matches(loginDto.getPassword(), user.getHashedPassword())) {
                         log.info("Serving token to user: {}", user.getEmail());
-                        return Mono.just(jwtSupport.generateToken(user.getEmail()));
+                        return Mono.just(user.getEmail());
                     }
+                    log.info("Invalid password for user '{}', not serving token", user.getEmail());
                     return Mono.empty();
-                });
+                })
+                .map(jwtSupport::generateToken)
+                .map(this::buildCookieFromToken);
+    }
+
+    public Mono<Boolean> validate(HttpCookie httpCookie) {
+        BearerToken token = new BearerToken(httpCookie.getValue());
+        return userRepository.findByEmail(jwtSupport.getUserEmail(token))
+                .flatMap(user -> jwtSupport.isValidToken(token, user) ? Mono.just(Boolean.TRUE) : Mono.empty());
+    }
+
+    private ResponseCookie buildCookieFromToken(BearerToken bearerToken) {
+        return ResponseCookie.from(cookieName).build()
+                .mutate()
+                .value(bearerToken.getValue())
+                .httpOnly(true)
+                .maxAge(Duration.ofHours(durationHours))
+                .build();
     }
 }

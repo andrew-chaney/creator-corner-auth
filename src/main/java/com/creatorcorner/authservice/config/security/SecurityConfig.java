@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .authorizeExchange(exchange -> exchange.pathMatchers(HttpMethod.GET, "/actuator/health").permitAll())
                 .authorizeExchange(exchange -> exchange.pathMatchers(HttpMethod.POST, "/login").permitAll())
                 .authorizeExchange(exchange -> exchange.pathMatchers(HttpMethod.POST, "/register").permitAll())
-                .authorizeExchange(exchange -> exchange.pathMatchers(HttpMethod.GET, "/validate").permitAll())
+                .authorizeExchange(exchange -> exchange.pathMatchers("/validate").permitAll())
                 // Authenticated permitted
                 .authorizeExchange(exchange -> exchange.pathMatchers("/user/*").authenticated())
                 // Filter

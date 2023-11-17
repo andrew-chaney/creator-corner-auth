@@ -2,15 +2,15 @@ package com.creatorcorner.authservice.mapper;
 
 import com.creatorcorner.authservice.dto.UserDto;
 import com.creatorcorner.authservice.entity.User;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Component
 public class UserMapper {
 
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     public User userToMap(UserDto user) {
         return User.builder()

@@ -12,5 +12,6 @@ spring:
 
 # Variables needed for application function
 jwt:
-  duration: 15
+  duration-hours: 15
+  cookie-name: creator_corner
   secret: SALkjfnalskupoi135-09kljalkn$-1234jkjlnlnaljs

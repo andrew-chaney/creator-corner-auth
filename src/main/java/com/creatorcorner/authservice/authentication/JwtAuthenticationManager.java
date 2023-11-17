@@ -1,38 +1,39 @@
 package com.creatorcorner.authservice.authentication;
 
 import com.creatorcorner.authservice.repository.UserRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ServerWebInputException;
 import reactor.core.publisher.Mono;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
+@Slf4j
 @Component
 public class JwtAuthenticationManager implements ReactiveAuthenticationManager {
 
-    private JwtSupport jwtSupport;
-    private UserRepository userRepository;
+    private final JwtSupport jwtSupport;
+    private final UserRepository userRepository;
 
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
         return Mono.justOrEmpty(authentication)
                 .filter(auth -> auth.getClass() == BearerToken.class)
                 .cast(BearerToken.class)
-                .map(this::validate)
+                .flatMap(this::validate)
                 .onErrorMap(error -> new InvalidBearerToken(error.getMessage()));
     }
 
-    private Authentication validate(BearerToken bearerToken) {
+    private Mono<Authentication> validate(BearerToken bearerToken) {
         return userRepository.findByEmail(jwtSupport.getUserEmail(bearerToken))
-                .<UsernamePasswordAuthenticationToken>handle((user, sink) -> {
+                .flatMap(user -> {
                     if (jwtSupport.isValidToken(bearerToken, user)) {
-                        sink.next(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getHashedPassword()));
-                        return;
+                        return Mono.just((Authentication) new UsernamePasswordAuthenticationToken(user.getEmail(), user.getHashedPassword()));
                     }
-                    sink.error(new IllegalArgumentException("Token is not valid"));
-                })
-                .block(); // TODO: fix this blocking call
+                    return Mono.error(new ServerWebInputException("Invalid authentication cookie provided"));
+                });
     }
 }

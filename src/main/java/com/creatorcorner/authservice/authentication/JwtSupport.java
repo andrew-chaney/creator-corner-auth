@@ -17,8 +17,8 @@ import java.util.Objects;
 @Component
 public class JwtSupport {
 
-    @Value("${jwt.duration}")
-    private int durationMinutes;
+    @Value("${jwt.duration-hours}")
+    private int durationHours;
 
     @Value("${jwt.secret}")
     private String secret;
@@ -30,7 +30,7 @@ public class JwtSupport {
                 Jwts.builder()
                         .setSubject(userEmail)
                         .setIssuedAt(new Date(System.currentTimeMillis()))
-                        .setExpiration(new Date(System.currentTimeMillis() + (1000L * 60 * durationMinutes)))
+                        .setExpiration(new Date(System.currentTimeMillis() + (1000L * 3600L * durationHours)))
                         .signWith(getSigningKey())
                         .compact()
         );
