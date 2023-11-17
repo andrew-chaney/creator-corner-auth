@@ -17,7 +17,6 @@ import org.springframework.util.MultiValueMap;
 import java.time.Duration;
 import java.util.Date;
 import java.util.Objects;
-import java.util.concurrent.Callable;
 
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -113,7 +112,7 @@ class UserCookieValidationTest extends AbstractBaseTest {
         // Using Awaitility to wait until the cookie is considered expired, to not have to wait more than necessary
         await()
                 .atMost(Duration.ofSeconds(10))
-                .until(callableIsExpired(expiration));
+                .until(() -> expiration.before(new Date(System.currentTimeMillis())));
 
         this.client.get().uri("/validate")
                 .cookies(reqCookies -> reqCookies.addAll(customCookies))
@@ -128,9 +127,5 @@ class UserCookieValidationTest extends AbstractBaseTest {
                 .cookie(cookieName, "not-a-valid-cookie-value")
                 .exchange()
                 .expectStatus().isUnauthorized();
-    }
-
-    private Callable<Boolean> callableIsExpired(Date expiration) {
-        return () -> expiration.before(new Date(System.currentTimeMillis()));
     }
 }
