@@ -14,9 +14,12 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.Callable;
 
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -84,14 +87,14 @@ class UserCookieValidationTest extends AbstractBaseTest {
     @DisplayName("An expired cookie is not valid")
     void invalidWhenExpired() {
         // Create an expired token for the existing user
-        String userEmail = "johndoe@john.doe";
+        Date expiration = new Date(System.currentTimeMillis() + (1000L * 5));
 
         ResponseCookie cookie = ResponseCookie.from(cookieName)
                 .value(new AuthToken(
                                 Jwts.builder()
-                                        .setSubject(userEmail)
+                                        .setSubject("johndoe@john.doe")
                                         .setIssuedAt(new Date(System.currentTimeMillis()))
-                                        .setExpiration(new Date(System.currentTimeMillis() + (1000L * 10))) // Valid for 10 seconds
+                                        .setExpiration(expiration) // Valid for 10 seconds
                                         .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
                                         .compact()
                         ).getValue()
@@ -106,6 +109,16 @@ class UserCookieValidationTest extends AbstractBaseTest {
                 .cookies(reqCookies -> reqCookies.addAll(customCookies))
                 .exchange()
                 .expectStatus().isOk();
+
+        // Using Awaitility to wait until the cookie is considered expired, to not have to wait more than necessary
+        await()
+                .atMost(Duration.ofSeconds(10))
+                .until(callableIsExpired(expiration));
+
+        this.client.get().uri("/validate")
+                .cookies(reqCookies -> reqCookies.addAll(customCookies))
+                .exchange()
+                .expectStatus().isUnauthorized();
     }
 
     @Test
@@ -115,5 +128,9 @@ class UserCookieValidationTest extends AbstractBaseTest {
                 .cookie(cookieName, "not-a-valid-cookie-value")
                 .exchange()
                 .expectStatus().isUnauthorized();
+    }
+
+    private Callable<Boolean> callableIsExpired(Date expiration) {
+        return () -> expiration.before(new Date(System.currentTimeMillis()));
     }
 }
