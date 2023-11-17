@@ -22,6 +22,6 @@ public class JwtAuthenticationConverter implements ServerAuthenticationConverter
     public Mono<Authentication> convert(ServerWebExchange exchange) {
         return Mono.justOrEmpty(exchange.getRequest().getCookies().getFirst(cookieName))
                 .map(HttpCookie::getValue)
-                .map(BearerToken::new);
+                .map(AuthToken::new);
     }
 }

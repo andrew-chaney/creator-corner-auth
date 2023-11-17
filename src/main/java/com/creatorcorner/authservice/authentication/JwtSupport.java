@@ -25,8 +25,8 @@ public class JwtSupport {
 
     private JwtParser parser;
 
-    public BearerToken generateToken(String userEmail) {
-        return new BearerToken(
+    public AuthToken generateToken(String userEmail) {
+        return new AuthToken(
                 Jwts.builder()
                         .setSubject(userEmail)
                         .setIssuedAt(new Date(System.currentTimeMillis()))
@@ -36,15 +36,15 @@ public class JwtSupport {
         );
     }
 
-    public String getUserEmail(BearerToken bearerToken) {
+    public String getUserEmail(AuthToken authToken) {
         return getParser()
-                .parseClaimsJws(bearerToken.getValue())
+                .parseClaimsJws(authToken.getValue())
                 .getBody()
                 .getSubject();
     }
 
-    public boolean isValidToken(BearerToken bearerToken, User user) {
-        Claims claims = getParser().parseClaimsJws(bearerToken.getValue()).getBody();
+    public boolean isValidToken(AuthToken authToken, User user) {
+        Claims claims = getParser().parseClaimsJws(authToken.getValue()).getBody();
         boolean unexpired = claims.getExpiration().after(new Date(System.currentTimeMillis()));
 
         return unexpired && (Objects.equals(claims.getSubject(), user.getEmail()));

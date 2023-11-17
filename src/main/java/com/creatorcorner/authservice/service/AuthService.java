@@ -1,6 +1,6 @@
 package com.creatorcorner.authservice.service;
 
-import com.creatorcorner.authservice.authentication.BearerToken;
+import com.creatorcorner.authservice.authentication.AuthToken;
 import com.creatorcorner.authservice.authentication.JwtSupport;
 import com.creatorcorner.authservice.dto.LoginDto;
 import com.creatorcorner.authservice.repository.UserRepository;
@@ -43,15 +43,15 @@ public class AuthService {
     }
 
     public Mono<Boolean> validate(HttpCookie httpCookie) {
-        BearerToken token = new BearerToken(httpCookie.getValue());
+        AuthToken token = new AuthToken(httpCookie.getValue());
         return userRepository.findByEmail(jwtSupport.getUserEmail(token))
                 .flatMap(user -> jwtSupport.isValidToken(token, user) ? Mono.just(Boolean.TRUE) : Mono.empty());
     }
 
-    private ResponseCookie buildCookieFromToken(BearerToken bearerToken) {
+    private ResponseCookie buildCookieFromToken(AuthToken authToken) {
         return ResponseCookie.from(cookieName).build()
                 .mutate()
-                .value(bearerToken.getValue())
+                .value(authToken.getValue())
                 .httpOnly(true)
                 .maxAge(Duration.ofHours(durationHours))
                 .build();

@@ -21,16 +21,16 @@ public class JwtAuthenticationManager implements ReactiveAuthenticationManager {
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
         return Mono.justOrEmpty(authentication)
-                .filter(auth -> auth.getClass() == BearerToken.class)
-                .cast(BearerToken.class)
+                .filter(auth -> auth.getClass() == AuthToken.class)
+                .cast(AuthToken.class)
                 .flatMap(this::validate)
-                .onErrorMap(error -> new InvalidBearerToken(error.getMessage()));
+                .onErrorMap(error -> new InvalidAuthToken(error.getMessage()));
     }
 
-    private Mono<Authentication> validate(BearerToken bearerToken) {
-        return userRepository.findByEmail(jwtSupport.getUserEmail(bearerToken))
+    private Mono<Authentication> validate(AuthToken authToken) {
+        return userRepository.findByEmail(jwtSupport.getUserEmail(authToken))
                 .flatMap(user -> {
-                    if (jwtSupport.isValidToken(bearerToken, user)) {
+                    if (jwtSupport.isValidToken(authToken, user)) {
                         return Mono.just((Authentication) new UsernamePasswordAuthenticationToken(user.getEmail(), user.getHashedPassword()));
                     }
                     return Mono.error(new ServerWebInputException("Invalid authentication cookie provided"));

@@ -1,7 +1,7 @@
 package com.creatorcorner.authservice.user;
 
 import com.creatorcorner.authservice.AbstractBaseTest;
-import com.creatorcorner.authservice.authentication.BearerToken;
+import com.creatorcorner.authservice.authentication.AuthToken;
 import com.creatorcorner.authservice.dto.LoginDto;
 import com.creatorcorner.authservice.dto.UserDto;
 import io.jsonwebtoken.Jwts;
@@ -87,7 +87,7 @@ class UserCookieValidationTest extends AbstractBaseTest {
         String userEmail = "johndoe@john.doe";
 
         ResponseCookie cookie = ResponseCookie.from(cookieName)
-                .value(new BearerToken(
+                .value(new AuthToken(
                                 Jwts.builder()
                                         .setSubject(userEmail)
                                         .setIssuedAt(new Date(System.currentTimeMillis()))

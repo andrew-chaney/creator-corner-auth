@@ -7,11 +7,11 @@ import org.springframework.security.core.authority.AuthorityUtils;
 
 @Getter
 @Setter
-public class BearerToken extends AbstractAuthenticationToken {
+public class AuthToken extends AbstractAuthenticationToken {
 
     private String value;
 
-    public BearerToken(String value) {
+    public AuthToken(String value) {
         super(AuthorityUtils.NO_AUTHORITIES);
         this.value = value;
     }

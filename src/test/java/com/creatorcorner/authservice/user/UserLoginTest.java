@@ -1,7 +1,7 @@
 package com.creatorcorner.authservice.user;
 
 import com.creatorcorner.authservice.AbstractBaseTest;
-import com.creatorcorner.authservice.authentication.BearerToken;
+import com.creatorcorner.authservice.authentication.AuthToken;
 import com.creatorcorner.authservice.authentication.JwtSupport;
 import com.creatorcorner.authservice.dto.LoginDto;
 import com.creatorcorner.authservice.dto.UserDto;
@@ -65,7 +65,7 @@ class UserLoginTest extends AbstractBaseTest {
         ResponseCookie authCookie = result.getFirst(cookieName);
         assertThat(authCookie, is(notNullValue()));
 
-        BearerToken resultingToken = new BearerToken(authCookie.getValue());
+        AuthToken resultingToken = new AuthToken(authCookie.getValue());
 
         // Get the entity for the test user
         User testUserEntity = userRepository.findByEmail(testUser.getEmail()).block();
