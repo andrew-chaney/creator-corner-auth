@@ -1,4 +1,4 @@
-package com.creatorcorner.authservice.user;
+package com.creatorcorner.authservice.auth;
 
 import com.creatorcorner.authservice.AbstractBaseTest;
 import com.creatorcorner.authservice.authentication.AuthToken;
@@ -18,7 +18,7 @@ import org.springframework.util.MultiValueMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-class UserLoginTest extends AbstractBaseTest {
+class LoginTest extends AbstractBaseTest {
 
     @Autowired
     private JwtSupport jwtSupport;

@@ -1,4 +1,4 @@
-package com.creatorcorner.authservice.user;
+package com.creatorcorner.authservice.auth;
 
 import com.creatorcorner.authservice.AbstractBaseTest;
 import com.creatorcorner.authservice.authentication.AuthToken;
@@ -23,7 +23,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
-class UserCookieValidationTest extends AbstractBaseTest {
+class CookieValidationTest extends AbstractBaseTest {
 
     @Value("${jwt.cookie-name}")
     private String cookieName;
