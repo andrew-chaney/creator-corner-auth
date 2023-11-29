@@ -1,7 +1,7 @@
 package com.creatorcorner.authservice.auth;
 
 import com.creatorcorner.authservice.AbstractBaseTest;
-import com.creatorcorner.authservice.authentication.AuthToken;
+import com.creatorcorner.authservice.authentication.BearerToken;
 import com.creatorcorner.authservice.authentication.JwtSupport;
 import com.creatorcorner.authservice.dto.LoginDto;
 import com.creatorcorner.authservice.dto.UserDto;
@@ -10,10 +10,8 @@ import com.creatorcorner.authservice.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseCookie;
-import org.springframework.util.MultiValueMap;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -25,9 +23,6 @@ class LoginTest extends AbstractBaseTest {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Value("${jwt.cookie-name}")
-    private String cookieName;
 
     @Test
     @DisplayName("Can login as a valid user")
@@ -52,26 +47,26 @@ class LoginTest extends AbstractBaseTest {
                 .expectStatus().isCreated();
 
         // Log the user in
-        MultiValueMap<String, ResponseCookie> result = this.client.post().uri("/login")
+        HttpHeaders result = this.client.post().uri("/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(loginRequest)
                 .exchange()
                 .expectStatus().isOk()
-                .expectCookie().exists(cookieName)
+                .expectHeader().exists(HttpHeaders.AUTHORIZATION)
                 .returnResult(Void.class)
-                .getResponseCookies();
+                .getResponseHeaders();
 
-        // Create the BearerToken from the provided cookie
-        ResponseCookie authCookie = result.getFirst(cookieName);
-        assertThat(authCookie, is(notNullValue()));
+        // Create the BearerToken from the provided token
+        String providedToken = result.getFirst(HttpHeaders.AUTHORIZATION);
+        assertThat(providedToken, is(notNullValue()));
+        assertThat(providedToken.substring(0, 7), is(equalTo("Bearer ")));
 
-        AuthToken resultingToken = new AuthToken(authCookie.getValue());
+        BearerToken resultingToken = new BearerToken(providedToken.substring(7));
 
         // Get the entity for the test user
         User testUserEntity = userRepository.findByEmail(testUser.getEmail()).block();
 
-        // Test the contents of the cookie
-        assertThat(authCookie.isHttpOnly(), is(Boolean.TRUE));
+        // Test the contents of the bearer token
         assertThat(jwtSupport.getUserEmail(resultingToken), equalTo(testUser.getEmail()));
         assertThat(jwtSupport.isValidToken(resultingToken, testUserEntity), is(Boolean.TRUE));
     }

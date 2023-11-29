@@ -4,7 +4,7 @@ import com.creatorcorner.authservice.dto.LoginDto;
 import com.creatorcorner.authservice.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -22,26 +22,23 @@ public class AuthHandler {
     private final AuthService authService;
     private final Validator validator;
 
-    @Value("${jwt.cookie-name}")
-    private String cookieName;
-
     public Mono<ServerResponse> login(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(LoginDto.class)
                 .doOnNext(this::validate)
                 .doOnNext(login -> log.info("Processing login attempt for user: {}", login.getEmail()))
                 .flatMap(authService::login)
-                .flatMap(authCookie -> ServerResponse.ok()
-                        .cookie(authCookie)
+                .flatMap(bearerToken -> ServerResponse.ok()
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerToken.getValue())
                         .build()
                 )
-                .switchIfEmpty(ServerResponse.badRequest().bodyValue("Invalid credentials provided"));
+                .switchIfEmpty(ServerResponse.badRequest().bodyValue("Invalid bearer token provided"));
     }
 
-    public Mono<ServerResponse> validateCookie(ServerRequest serverRequest) {
-        return Mono.justOrEmpty(serverRequest.cookies().getFirst(cookieName))
+    public Mono<ServerResponse> validateToken(ServerRequest serverRequest) {
+        return Mono.justOrEmpty(serverRequest.headers().firstHeader(HttpHeaders.AUTHORIZATION))
                 .flatMap(authService::validate)
                 .flatMap(valid -> ServerResponse.ok().build())
-                .switchIfEmpty(ServerResponse.badRequest().bodyValue("Invalid cookie"));
+                .switchIfEmpty(ServerResponse.badRequest().bodyValue("Invalid bearer token provided"));
     }
 
     private void validate(LoginDto loginDto) {

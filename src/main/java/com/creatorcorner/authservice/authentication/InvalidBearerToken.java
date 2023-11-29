@@ -2,13 +2,14 @@ package com.creatorcorner.authservice.authentication;
 
 import org.springframework.security.core.AuthenticationException;
 
-public class InvalidAuthToken extends AuthenticationException {
+public class InvalidBearerToken extends AuthenticationException {
 
-    public InvalidAuthToken(String msg, Throwable cause) {
+    public InvalidBearerToken(String msg, Throwable cause) {
+
         super(msg, cause);
     }
 
-    public InvalidAuthToken(String msg) {
+    public InvalidBearerToken(String msg) {
         super(msg);
     }
 }
