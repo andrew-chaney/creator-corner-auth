@@ -31,7 +31,7 @@ public class AuthHandler {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + bearerToken.getValue())
                         .build()
                 )
-                .switchIfEmpty(ServerResponse.badRequest().bodyValue("Invalid bearer token provided"));
+                .switchIfEmpty(ServerResponse.badRequest().bodyValue("Invalid credentials provided."));
     }
 
     public Mono<ServerResponse> validateToken(ServerRequest serverRequest) {

@@ -19,7 +19,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @Data
-@Validated
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDto {
 

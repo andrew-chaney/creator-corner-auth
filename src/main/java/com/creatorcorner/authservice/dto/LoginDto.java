@@ -9,7 +9,6 @@ import org.springframework.validation.annotation.Validated;
 
 @Builder
 @Data
-@Validated
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LoginDto {
 
